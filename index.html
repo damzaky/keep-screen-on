@@ -1,0 +1,28 @@
+Click below button to keep screen on. Optionally, you can add custom image URL to below input, then click the button again.
+<br>
+<button id='start-button'>keep screen on</button>
+<br>
+custom image URL: <input id='custom-image' type='text' placeholder='https://path-to-image' />
+
+<script>
+    const defaultImage = 'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=';
+    const startButton = document.getElementById('start-button');
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 512;
+
+    const video = document.createElement('video');
+    video.srcObject = canvas.captureStream();
+    video.muted = true;
+
+    startButton.addEventListener('click', async () => {
+        const dynamicImageUrl = document.getElementById('custom-image').value;
+        const image = new Image();
+        image.crossOrigin = true;
+        image.src = dynamicImageUrl || defaultImage;
+        await image.decode();
+
+        canvas.getContext('2d').drawImage(image, 0, 0, 512, 512);
+        await video.play();
+        await video.requestPictureInPicture();
+    });
+</script>
