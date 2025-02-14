@@ -1,28 +1,83 @@
-Click below button to keep screen on. Optionally, you can add custom image URL to below input, then click the button again.
-<br>
-<button id='start-button'>keep screen on</button>
-<br>
-custom image URL: <input id='custom-image' type='text' placeholder='https://path-to-image' />
+<html>
+  <head>
+    <title>Keep screen on</title>
+    <meta
+      name="description"
+      content="Keep screen on and prevent it from getting timeout"
+    />
+    <style>
+      body {
+        background: #403a6f;
+        color: white;
+        font-family: arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        align-items: center;
+      }
+      #main {
+        background: black;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 100px 10px #000;
+        transition: all 0.3s cubic-bezier(0.87, 0, 0.13, 1) 0s;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main">
+      Below button will keep your screen on and prevents it from getting a
+      timeout.
+      <br />
+      <button id="start-button">keep screen on</button>
+      <br />
+      custom image URL:
+      <input
+        id="custom-image"
+        type="text"
+        placeholder="https://path-to-image"
+      />
+    </div>
 
-<script>
-    const defaultImage = 'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=';
-    const startButton = document.getElementById('start-button');
-    const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 512;
+    <script>
+      const defaultImage =
+        "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
+      const startButton = document.getElementById("start-button");
+      const canvas = document.createElement("canvas");
+      const customImage = document.getElementById("custom-image");
+      const main = document.getElementById("main");
+      canvas.width = canvas.height = 512;
 
-    const video = document.createElement('video');
-    video.srcObject = canvas.captureStream();
-    video.muted = true;
+      const video = document.createElement("video");
+      video.muted = true;
 
-    startButton.addEventListener('click', async () => {
-        const dynamicImageUrl = document.getElementById('custom-image').value;
+      customImage.value = localStorage.getItem("image") || "";
+      customImage.addEventListener("change", (e) => {
+        localStorage.setItem("image", e.target.value);
+      });
+
+      startButton.addEventListener("click", async () => {
+        video.srcObject = canvas.captureStream();
+        const dynamicImageUrl = document.getElementById("custom-image").value;
         const image = new Image();
         image.crossOrigin = true;
         image.src = dynamicImageUrl || defaultImage;
         await image.decode();
 
-        canvas.getContext('2d').drawImage(image, 0, 0, 512, 512);
+        canvas.getContext("2d").drawImage(image, 0, 0, 512, 512);
         await video.play();
         await video.requestPictureInPicture();
-    });
-</script>
+      });
+
+      video.addEventListener("leavepictureinpicture", () => {
+        main.style.boxShadow = "0 0 100px 10px #000";
+      });
+
+      video.addEventListener("enterpictureinpicture", () => {
+        main.style.boxShadow = "0 0 100px 10px #00ffb1";
+      });
+    </script>
+  </body>
+</html>
