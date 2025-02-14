@@ -24,16 +24,43 @@
         box-shadow: 0 0 100px 10px #000;
         transition: all 0.3s cubic-bezier(0.87, 0, 0.13, 1) 0s;
       }
+      #text {
+        width: 286px;
+        height: 286px;
+        font-size: 183%;
+      }
+      button {
+        background: white;
+        color: black;
+        border: 0;
+        font-size: 200%;
+        padding: 15px;
+        border-radius: 7px;
+        cursor: hand;
+      }
+      input {
+        background: transparent;
+        color: white;
+        border: 0;
+        border-bottom: 2px solid white;
+        width: 100%;
+        margin-top: 15px;
+        font-size: 100%;
+        padding: 10px 0;
+        outline: none !important;
+      }
     </style>
   </head>
   <body>
     <div id="main">
-      Below button will keep your screen on and prevents it from getting a
-      timeout.
+      <div id="text">
+        The following button will keep your screen on and prevents it from
+        getting a timeout.
+      </div>
+
       <br />
       <button id="start-button">keep screen on</button>
       <br />
-      custom image URL:
       <input
         id="custom-image"
         type="text"
@@ -64,7 +91,11 @@
         const image = new Image();
         image.crossOrigin = true;
         image.src = dynamicImageUrl || defaultImage;
-        await image.decode();
+        try {
+          await image.decode();
+        } catch (e) {
+          image.src = defaultImage;
+        }
 
         canvas.getContext("2d").drawImage(image, 0, 0, 512, 512);
         await video.play();
