@@ -8,3 +8,4 @@ on:
 jobs:
   deploy:
     uses: damzaky/workflows/.github/workflows/inject-ga.yml@main
+
